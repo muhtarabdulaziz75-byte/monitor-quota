@@ -1,1 +1,156 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor Quota PWA</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icon-192.png">
+</head>
+<body>
 
+    <header>
+        <h1>📊 Monitor Quota</h1>
+        <p>Kendalikan dan pantau konsumsi data internet Anda</p>
+    </header>
+
+    <main class="container">
+        <section class="card form-section">
+            <h2>⚙️ Input Data Kuota</h2>
+            <form id="quotaForm">
+                <div class="form-group">
+                    <label for="totalKuota">Total Kuota Paket (GB):</label>
+                    <input type="number" id="totalKuota" step="0.01" min="0.1" required placeholder="Contoh: 50">
+                </div>
+                <div class="form-group">
+                    <label for="sisaKuota">Sisa Kuota Saat Ini (GB):</label>
+                    <input type="number" id="sisaKuota" step="0.01" min="0" required placeholder="Contoh: 35">
+                </div>
+                <div class="form-group">
+                    <label for="durasiPaket">Durasi Paket (Hari):</label>
+                    <input type="number" id="durasiPaket" min="1" required placeholder="Contoh: 30">
+                </div>
+                <div class="form-group">
+                    <label for="hariPemakaian">Hari Pemakaian Saat Ini (Hari Ke-):</label>
+                    <input type="number" id="hariPemakaian" min="0" required placeholder="Contoh: 10">
+                </div>
+                <button type="submit" class="btn-submit">Hitung Analisis</button>
+                <button type="button" id="btnReset" class="btn-reset">Reset Data</button>
+            </form>
+        </section>
+
+        <section class="dashboard-section">
+            
+            <div class="card status-card">
+                <h3>📊 Dashboard Utama</h3>
+                <div class="status-container">
+                    <span class="label">Status Penggunaan:</span>
+                    <span id="statusText" class="status-badge">Menunggu Input...</span>
+                </div>
+                <div class="grid-2">
+                    <div class="metric-box">
+                        <span class="metric-label">Indeks Hemat</span>
+                        <div id="indeksHemat" class="metric-value">-</div>
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-label">Persentase Indeks</span>
+                        <div id="persenIndeks" class="metric-value">-</div>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <span class="metric-label">Progress Sisa Kuota Aktual</span>
+                    <div class="progress-bar-bg">
+                        <div id="progressBar" class="progress-bar" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>📦 Informasi Kuota</h3>
+                <table class="table-data">
+                    <tr>
+                        <td>Kuota Total</td>
+                        <td id="outKuotaTotal" class="text-right bold">-</td>
+                    </tr>
+                    <tr>
+                        <td>Kuota Terpakai</td>
+                        <td id="outKuotaTerpakai" class="text-right bold">-</td>
+                    </tr>
+                    <tr class="sub-row">
+                        <td>Persentase Terpakai</td>
+                        <td id="outPersenTerpakai" class="text-right italic">-</td>
+                    </tr>
+                    <tr>
+                        <td>Kuota Tersisa</td>
+                        <td id="outKuotaTersisa" class="text-right bold">-</td>
+                    </tr>
+                    <tr class="sub-row">
+                        <td>Persentase Tersisa</td>
+                        <td id="outPersenTersisa" class="text-right italic">-</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3>📈 Analisis Target</h3>
+                <table class="table-data">
+                    <tr>
+                        <td>Sisa Kuota Ideal seharusnya</td>
+                        <td id="outSisaIdeal" class="text-right bold">-</td>
+                    </tr>
+                    <tr>
+                        <td>Persentase Sisa Ideal</td>
+                        <td id="outPersenIdeal" class="text-right">-</td>
+                    </tr>
+                    <tr>
+                        <td>Selisih Realisasi vs Ideal</td>
+                        <td id="outSelisih" class="text-right bold">-</td>
+                    </tr>
+                    <tr>
+                        <td>Status Selisih</td>
+                        <td id="outStatusSelisih" class="text-right bold">-</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3>💡 Analisis Harian</h3>
+                <table class="table-data">
+                    <tr>
+                        <td>Sisa Waktu Paket</td>
+                        <td id="outSisaHari" class="text-right bold">-</td>
+                    </tr>
+                    <tr>
+                        <td>Target Batas Aman Harian</td>
+                        <td id="outTargetHarian" class="text-right text-highlight bold">-</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card insight-card">
+                <h3>🤖 Rekomendasi / Insight</h3>
+                <p id="insightText">Silakan masukkan data kuota Anda pada form di atas untuk memunculkan analisis cerdas dari sistem.</p>
+            </div>
+
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Monitor Quota App. Dirancang untuk mode offline (PWA).</p>
+    </footer>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(reg => console.log('Service Worker Active:', reg.scope))
+                    .catch(err => console.error('Service Worker Error:', err));
+            });
+        }
+    </script>
+    <script src="script.js"></script>
+</body>
+  </html>
+  
