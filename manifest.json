@@ -1,17 +1,25 @@
 {
   "id": "/monitor-quota/",
-  "name": "Monitor Quota App",
-  "short_name": "MonQuota",
-  ...
-}
   "name": "Monitor Quota",
   "short_name": "MonQuota",
   "description": "Aplikasi untuk memantau penggunaan kuota internet secara ideal.",
+  "lang": "id-ID",
+
   "start_url": "./",
+  "scope": "./",
+
   "display": "standalone",
+  "orientation": "portrait-primary",
+
   "background_color": "#f4f6f9",
   "theme_color": "#2563eb",
-  "orientation": "portrait-primary",
+
+  "categories": [
+    "productivity",
+    "utilities",
+    "tools"
+  ],
+
   "icons": [
     {
       "src": "icon-192.png",
@@ -22,7 +30,8 @@
     {
       "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
