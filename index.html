@@ -8,13 +8,16 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2563eb">
     <link rel="apple-touch-icon" href="icon-192.png">
-</head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    </head>
 <body>
 
-    <header>
+    <header style="position: relative;">
         <h1>📊 Monitor Quota</h1>
         <p>Kendalikan dan pantau konsumsi data internet Anda</p>
-    </header>
+        <button type="button" id="btnDarkMode" style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.2); border: none; font-size: 20px; padding: 8px 12px; border-radius: 50%; cursor: pointer; transition: transform 0.2s;" onclick="this.style.transform='scale(0.95)'; setTimeout(()=>this.style.transform='scale(1)', 100);">🌙</button>
+        </header>
 
     <main class="container">
         <section class="card form-section">
@@ -33,12 +36,22 @@
                     <input type="number" id="durasiPaket" min="1" required placeholder="Contoh: 30">
                 </div>
                 <div class="form-group">
+                    <label for="tanggalMulai">Tanggal Mulai Paket (Opsional - Pembantu):</label>
+                    <input type="date" id="tanggalMulai">
+                </div>
+                <div class="form-group">
                     <label for="hariPemakaian">Hari Pemakaian Saat Ini (Hari Ke-):</label>
                     <input type="number" id="hariPemakaian" min="0" required placeholder="Contoh: 10">
                 </div>
                 <button type="submit" class="btn-submit">Hitung Analisis</button>
                 <button type="button" id="btnReset" class="btn-reset">Reset Data</button>
-            </form>
+                <button type="button" id="btnExportPDF" class="btn-pdf">📄 Export PDF</button>
+                <div class="backup-restore-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                    <button type="button" id="btnBackupData" class="btn-backup">📤 Backup Data</button>
+                    <button type="button" id="btnRestoreData" class="btn-restore">📥 Restore Data</button>
+                </div>
+                <input type="file" id="inputRestoreFile" accept=".json" style="display: none;">
+                </form>
         </section>
 
         <section class="dashboard-section">
@@ -67,6 +80,59 @@
                 </div>
             </div>
 
+            <div class="card smart-analytics-card">
+                <h3>🧠 Smart Analytics</h3>
+                <div id="smartAnalyticsContent">
+                    <p style="text-align: center; color: #6b7280; font-style: italic; margin: 15px 0;">Data histori belum cukup untuk menghasilkan analisis.</p>
+                </div>
+            </div>
+            <div class="card heatmap-calendar-card">
+                <h3>📅 Heatmap Calendar</h3>
+                <div class="heatmap-header">
+                    <button type="button" id="btnPrevMonth" class="btn-nav-cal">◀ Bulan Sebelumnya</button>
+                    <span id="heatmapMonthTitle" class="heatmap-month-title">Bulan Berjalan</span>
+                    <button type="button" id="btnNextMonth" class="btn-nav-cal">▶ Bulan Berikutnya</button>
+                </div>
+                <div class="heatmap-grid-header">
+                    <div>Min</div><div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div>
+                </div>
+                <div id="heatmapGrid" class="heatmap-grid"></div>
+                <div class="heatmap-legend">
+                    <div><span class="box-leg bg-sangat-hemat"></span> Sangat Hemat</div>
+                    <div><span class="box-leg bg-hemat-cal"></span> Hemat</div>
+                    <div><span class="box-leg bg-sesuai-cal"></span> Sesuai</div>
+                    <div><span class="box-leg bg-agak-boros"></span> Agak Boros</div>
+                    <div><span class="box-leg bg-boros-cal"></span> Sangat Boros</div>
+                    <div><span class="box-leg bg-no-data"></span> Tidak Ada Data</div>
+                </div>
+                <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 15px 0;" class="cal-divider">
+                <div class="heatmap-summary">
+                    <h4>📊 Ringkasan Bulanan</h4>
+                    <div class="summary-grid">
+                        <div class="summary-item">Hari Hemat: <b id="calSumHemat">0</b></div>
+                        <div class="summary-item">Hari Sesuai: <b id="calSumSesuai">0</b></div>
+                        <div class="summary-item">Hari Boros: <b id="calSumBoros">0</b></div>
+                        <div class="summary-item">Hari Tanpa Data: <b id="calSumNoData">0</b></div>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 13px;" class="streak-box">
+                        🔥 Streak Hemat Terpanjang: <b id="calStreakHemat">0 Hari</b>
+                    </div>
+                </div>
+            </div>
+
+            <div id="heatmapModal" class="cal-modal">
+                <div class="cal-modal-content">
+                    <span id="closeHeatmapModal" class="cal-modal-close">&times;</span>
+                    <h4 id="popCalTanggal" style="margin-bottom: 12px; font-size: 16px; border-bottom: 1px solid #e5e7eb; padding-bottom: 6px;">Detail Tanggal</h4>
+                    <table class="table-data">
+                        <tr><td>Status</td><td id="popCalStatus" class="text-right bold">-</td></tr>
+                        <tr><td>Indeks Hemat</td><td id="popCalIndeks" class="text-right bold">-</td></tr>
+                        <tr><td>Kuota Tersisa</td><td id="popCalSisa" class="text-right bold">-</td></tr>
+                        <tr><td>Kuota Terpakai</td><td id="popCalTerpakai" class="text-right bold">-</td></tr>
+                        <tr><td>Hari Pemakaian</td><td id="popCalHariKe" class="text-right bold">-</td></tr>
+                    </table>
+                </div>
+            </div>
             <div class="card">
                 <h3>📦 Informasi Kuota</h3>
                 <table class="table-data">
@@ -129,9 +195,95 @@
                 </table>
             </div>
 
+            <div class="card">
+                <h3>📅 Prediksi Kuota Habis</h3>
+                <table class="table-data">
+                    <tr>
+                        <td>Tanggal Prediksi Habis</td>
+                        <td id="outTglPrediksi" class="text-right bold">-</td>
+                    </tr>
+                    <tr>
+                        <td>Sisa Waktu Menuju Habis</td>
+                        <td id="outSisaHariKuota" class="text-right bold">-</td>
+                    </tr>
+                    <tr>
+                        <td>Status Prediksi</td>
+                        <td id="outStatusPrediksi" class="text-right bold">-</td>
+                    </tr>
+                </table>
+            </div>
+
             <div class="card insight-card">
                 <h3>🤖 Rekomendasi / Insight</h3>
                 <p id="insightText">Silakan masukkan data kuota Anda pada form di atas untuk memunculkan analisis cerdas dari sistem.</p>
+            </div>
+
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h3 style="margin: 0;">📜 Riwayat Perhitungan</h3>
+                    <button type="button" id="btnHapusHistory" class="btn-reset" style="margin: 0; padding: 4px 10px; font-size: 12px; width: auto;">Hapus Riwayat</button>
+                </div>
+                <div id="historyList" style="max-height: 350px; overflow-y: auto;">
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>📈 Grafik Penggunaan</h3>
+                <div id="grafikContainer" style="position: relative; width: 100%; min-height: 220px; display: flex; align-items: center; justify-content: center;">
+                    <canvas id="quotaChart" style="max-width: 100%; display: none;"></canvas>
+                    <p id="grafikKosongText" style="text-align: center; color: #6b7280; font-style: italic; margin: 15px 0;">Belum ada data untuk ditampilkan.</p>
+                </div>
+            </div>
+            <div class="card">
+                <h3>📊 Statistik Penggunaan</h3>
+                <div id="statistikContent">
+                    <table class="table-data">
+                        <tr>
+                            <td>Total Perhitungan</td>
+                            <td id="statTotalHitung" class="text-right bold">-</td>
+                        </tr>
+                        <tr>
+                            <td>Rata-rata Pemakaian Harian</td>
+                            <td id="statAvgPakaiHarian" class="text-right bold">-</td>
+                        </tr>
+                        <tr>
+                            <td>Rata-rata Indeks Hemat</td>
+                            <td id="statAvgIndeksHemat" class="text-right bold">-</td>
+                        </tr>
+                        <tr>
+                            <td>Jumlah Hari Hemat (Hijau)</td>
+                            <td id="statHariHemat" class="text-right bold text-highlight">-</td>
+                        </tr>
+                        <tr>
+                            <td>Jumlah Hari Sesuai Target (Kuning)</td>
+                            <td id="statHariSesuai" class="text-right bold">-</td>
+                        </tr>
+                        <tr>
+                            <td>Jumlah Hari Boros (Merah)</td>
+                            <td id="statHariBoros" class="text-right bold">-</td>
+                        </tr>
+                        <tr>
+                            <td>Persentase Hari Hemat</td>
+                            <td id="statPersenHariHemat" class="text-right bold italic">-</td>
+                        </tr>
+                        <tr>
+                            <td>Indeks Hemat Tertinggi</td>
+                            <td id="statIndeksMax" class="text-right bold">-</td>
+                        </tr>
+                        <tr>
+                            <td>Indeks Hemat Terendah</td>
+                            <td id="statIndeksMin" class="text-right bold">-</td>
+                        </tr>
+                        <tr>
+                            <td>Kuota Tersisa Tertinggi</td>
+                            <td id="statSisaMax" class="text-right bold">-</td>
+                        </tr>
+                        <tr>
+                            <td>Kuota Tersisa Terendah</td>
+                            <td id="statSisaMin" class="text-right bold">-</td>
+                        </tr>
+                    </table>
+                </div>
             </div>
 
         </section>
@@ -152,5 +304,4 @@
     </script>
     <script src="script.js"></script>
 </body>
-  </html>
-  
+</html>
