@@ -33,5 +33,27 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
+  ],
+
+  "screenshots": [
+  {
+    "src": "screenshot-home.png",
+    "sizes": "1080x2400",
+    "type": "image/png",
+    "form_factor": "narrow",
+    "label": "Halaman Utama"
+  },
+  {
+    "src": "screenshot-1.png",
+    "sizes": "1080x2400",
+    "type": "image/png",
+    "label": "Halaman Perhitungan"
+  },
+  {
+    "src": "screenshot-2.png",
+    "sizes": "1080x2400",
+    "type": "image/png",
+    "label": "Halaman Statistik"
+  }
   ]
 }
