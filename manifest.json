@@ -71,7 +71,7 @@
     },
     {
       "src": "screenshot-home.jpg",
-      "sizes": "1280x800",
+      "sizes": "720x1612",
       "type": "image/jpeg",
       "form_factor": "wide",
       "label": "Tampilan Dasbor MonQuota Desktop"
