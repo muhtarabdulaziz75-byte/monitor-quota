@@ -9,16 +9,25 @@
   "scope": "./",
 
   "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+
   "orientation": "portrait-primary",
 
   "background_color": "#f4f6f9",
   "theme_color": "#2563eb",
+
+  "dir": "ltr",
 
   "categories": [
     "productivity",
     "utilities",
     "tools"
   ],
+
+  "prefer_related_applications": false,
 
   "icons": [
     {
@@ -36,24 +45,24 @@
   ],
 
   "screenshots": [
-  {
-    "src": "screenshot-home.png",
-    "sizes": "1080x2400",
-    "type": "image/png",
-    "form_factor": "narrow",
-    "label": "Halaman Utama"
-  },
-  {
-    "src": "screenshot-1.png",
-    "sizes": "1080x2400",
-    "type": "image/png",
-    "label": "Halaman Perhitungan"
-  },
-  {
-    "src": "screenshot-2.png",
-    "sizes": "1080x2400",
-    "type": "image/png",
-    "label": "Halaman Statistik"
-  }
+    {
+      "src": "screenshot-home.png",
+      "sizes": "1080x2400",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Halaman Utama"
+    },
+    {
+      "src": "screenshot-1.png",
+      "sizes": "1080x2400",
+      "type": "image/png",
+      "label": "Halaman Perhitungan"
+    },
+    {
+      "src": "screenshot-2.png",
+      "sizes": "1080x2400",
+      "type": "image/png",
+      "label": "Halaman Statistik"
+    }
   ]
 }
