@@ -1,4 +1,9 @@
 {
+  "id": "/monitor-quota/",
+  "name": "Monitor Quota App",
+  "short_name": "MonQuota",
+  ...
+}
   "name": "Monitor Quota",
   "short_name": "MonQuota",
   "description": "Aplikasi untuk memantau penggunaan kuota internet secara ideal.",
