@@ -45,24 +45,24 @@
   ],
 
   "screenshots": [
-    {
-      "src": "screenshot-home.png",
-      "sizes": "1080x2400",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Halaman Utama"
-    },
-    {
-      "src": "screenshot-1.png",
-      "sizes": "1080x2400",
-      "type": "image/png",
-      "label": "Halaman Perhitungan"
-    },
-    {
-      "src": "screenshot-2.png",
-      "sizes": "1080x2400",
-      "type": "image/png",
-      "label": "Halaman Statistik"
-    }
+  {
+    "src": "screenshot-home.jpg",
+    "sizes": "720x1612",
+    "type": "image/jpeg",
+    "form_factor": "narrow",
+    "label": "Halaman Utama"
+  },
+  {
+    "src": "screenshot-1.jpg",
+    "sizes": "720x1612",
+    "type": "image/jpeg",
+    "label": "Halaman Perhitungan"
+  },
+  {
+    "src": "screenshot-2.jpg",
+    "sizes": "720x1612",
+    "type": "image/jpeg",
+    "label": "Halaman Statistik"
+  }
   ]
 }
